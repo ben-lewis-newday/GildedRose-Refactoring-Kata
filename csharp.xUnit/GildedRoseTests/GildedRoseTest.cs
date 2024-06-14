@@ -56,7 +56,8 @@ public class GildedRoseTest
     [InlineData("Backstage passes to a TAFKAL80ETC concert",10, 5, 9, 7)] 
     // - Quality increases by 3 when there are 5 days or less 
     [InlineData("Backstage passes to a TAFKAL80ETC concert",5, 5, 4, 8)] 
-    [InlineData("Backstage passes to a TAFKAL80ETC concert",0, 5, -1, 8)] 
+    [InlineData("Backstage passes to a TAFKAL80ETC concert",1, 5, 0, 8)] 
+    [InlineData("Backstage passes to a TAFKAL80ETC concert",0, 5, -1, 0)] 
     // - Quality drops to 0 after the concert
     [InlineData("Backstage passes to a TAFKAL80ETC concert",-1, 5, -2, 0)] 
     public void Backstage_passes_have_special_use_cases(string item, int sellIn, int quality, int expectedSellIn, int expectedQuality)

@@ -33,9 +33,9 @@ public class GildedRose(IEnumerable<Item> items)
                     <= 5 => 3
                 };
 
-                if (item.SellIn < 0)
+                if (item.SellIn < 1) 
                     item.Quality = 0;
-
+                
                 return;
             }
 
