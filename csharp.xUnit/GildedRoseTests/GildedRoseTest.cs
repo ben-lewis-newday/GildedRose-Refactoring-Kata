@@ -26,13 +26,14 @@ public class GildedRoseTest
 
     [Theory]
     // "Aged Brie" actually increases in Quality the older it gets
-    [InlineData(SpecialItems.AgedBrie,10, 5, 9, 6)] 
-    [InlineData(SpecialItems.AgedBrie,10, 50, 9, 50)] // The Quality of an item is never more than 50
+    [InlineData("Aged Brie",10, 5, 9, 6)] 
+    [InlineData("Aged Brie",10, 50, 9, 50)] // The Quality of an item is never more than 50
     // "Sulfuras, Hand of Ragnaros", being a legendary item, never has to be sold or decreases in Quality
-    [InlineData(SpecialItems.SulfurasHandOfRagnaros,10, 80, 10, 80)] 
+    [InlineData("Sulfuras, Hand of Ragnaros",10, 80, 10, 80)] 
     // "Backstage passes", like aged brie, increases in Quality as its SellIn value approaches
     // "Conjured" items degrade in Quality twice as fast as normal items
-    [InlineData(SpecialItems.ConjuredManaCake,10, 5, 9, 3)] 
+    [InlineData("Conjured Mana Cake",10, 5, 9, 3)] 
+    [InlineData("Conjured Wizard's Sleeve",10, 5, 9, 3)] 
     public void Certain_items_have_special_use_cases(string item, int sellIn, int quality, int expectedSellIn, int expectedQuality)
     {
         // Arrange
@@ -49,14 +50,15 @@ public class GildedRoseTest
     }
     
     [Theory]
-    [InlineData(SpecialItems.BackstagePasses,15, 5, 14, 6)] 
+    [InlineData("Backstage passes to a TAFKAL80ETC concert",15, 5, 14, 6)] 
+    [InlineData("Backstage passes to a Busted concert",15, 5, 14, 6)] 
     // - Quality increases by 2 when there are 10 days or less
-    [InlineData(SpecialItems.BackstagePasses,10, 5, 9, 7)] 
+    [InlineData("Backstage passes to a TAFKAL80ETC concert",10, 5, 9, 7)] 
     // - Quality increases by 3 when there are 5 days or less 
-    [InlineData(SpecialItems.BackstagePasses,5, 5, 4, 8)] 
-    [InlineData(SpecialItems.BackstagePasses,0, 5, -1, 8)] 
+    [InlineData("Backstage passes to a TAFKAL80ETC concert",5, 5, 4, 8)] 
+    [InlineData("Backstage passes to a TAFKAL80ETC concert",0, 5, -1, 8)] 
     // - Quality drops to 0 after the concert
-    [InlineData(SpecialItems.BackstagePasses,-1, 5, -2, 0)] 
+    [InlineData("Backstage passes to a TAFKAL80ETC concert",-1, 5, -2, 0)] 
     public void Backstage_passes_have_special_use_cases(string item, int sellIn, int quality, int expectedSellIn, int expectedQuality)
     {
         // Arrange

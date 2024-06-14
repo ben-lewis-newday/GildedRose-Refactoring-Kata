@@ -3,69 +3,61 @@ using System.Collections.Generic;
 
 namespace GildedRoseKata;
 
-public class GildedRose
+public class GildedRose(IEnumerable<Item> items)
 {
-    IList<Item> Items;
-
-    public GildedRose(IList<Item> Items)
-    {
-        this.Items = Items;
-    }
-
     public void UpdateQuality()
     {
-        foreach (var t in Items)
+        foreach (var t in items)
         {
-            if (t.Name == SpecialItems.SulfurasHandOfRagnaros)
+            if (t.Name == "Sulfuras, Hand of Ragnaros")
                 continue;
 
-            // Change quality
-            switch (t.Name)
-            {
-                case SpecialItems.AgedBrie:
-                case SpecialItems.BackstagePasses:
-                    AlterQuality(t, 1);
-                    break;
-                default:
-                    AlterQuality(t, -1);
-                    break;
-            }
-
+            AlterQuality(t, DoesIncreaseInQualityOverTime(t) ? 1 : -1);
             t.SellIn -= 1;
         }
     }
 
+    private static bool DoesIncreaseInQualityOverTime(Item item) => IsBackstagePass(item) || item.Name == "Aged Brie";
+    private static bool IsBackstagePass(Item item) => item.Name.StartsWith("Backstage passes", StringComparison.OrdinalIgnoreCase);
+    
     private static void AlterQuality(Item item, int value)
     {
-        if (item.Quality + value > 50)
+        try
         {
-            item.Quality = 50;
-            return;
-        }
-
-        if (item.Name == SpecialItems.BackstagePasses)
-        {
-            item.Quality += item.SellIn switch
+            if (IsBackstagePass(item))
             {
-                > 10 => 1,
-                < 11 and > 5 => 2,
-                <= 5 => 3
-            };
+                item.Quality += item.SellIn switch
+                {
+                    > 10 => 1,
+                    < 11 and > 5 => 2,
+                    <= 5 => 3
+                };
 
-            if (item.SellIn < 0)
-                item.Quality = 0;
+                if (item.SellIn < 0)
+                    item.Quality = 0;
 
-            return;
-        }
+                return;
+            }
 
-        if (item.SellIn < 1)
-            value *= 2;
+            if (item.SellIn < 1)
+                value *= 2;
+
+            if (item.Name.StartsWith("Conjured", StringComparison.OrdinalIgnoreCase))
+                value *= 2;
             
-        if (string.Equals(item.Name, SpecialItems.ConjuredManaCake, StringComparison.OrdinalIgnoreCase))
-            value *= 2;
-        
-        item.Quality += value;
+            item.Quality += value;
+        }
+        finally
+        {
+            EnforceQualityBoundaries(item);
+        }
+    }
 
+    private static void EnforceQualityBoundaries(Item item)
+    {
+        if (item.Quality > 50)
+            item.Quality = 50;
+        
         if (item.Quality < 0)
             item.Quality = 0;
     }
