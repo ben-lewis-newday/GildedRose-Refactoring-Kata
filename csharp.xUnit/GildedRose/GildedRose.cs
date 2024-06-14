@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GildedRoseKata;
 
@@ -13,77 +14,59 @@ public class GildedRose
 
     public void UpdateQuality()
     {
-        for (var i = 0; i < Items.Count; i++)
+        foreach (var t in Items)
         {
-            if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-            {
-                if (Items[i].Quality > 0)
-                {
-                    if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                    {
-                        Items[i].Quality = Items[i].Quality - 1;
-                    }
-                }
-            }
-            else
-            {
-                if (Items[i].Quality < 50)
-                {
-                    Items[i].Quality = Items[i].Quality + 1;
+            if (t.Name == SpecialItems.SulfurasHandOfRagnaros)
+                continue;
 
-                    if (Items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
-                    {
-                        if (Items[i].SellIn < 11)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
-
-                        if (Items[i].SellIn < 6)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
-                    }
-                }
+            // Change quality
+            switch (t.Name)
+            {
+                case SpecialItems.AgedBrie:
+                case SpecialItems.BackstagePasses:
+                    AlterQuality(t, 1);
+                    break;
+                default:
+                    AlterQuality(t, -1);
+                    break;
             }
 
-            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-            {
-                Items[i].SellIn = Items[i].SellIn - 1;
-            }
-
-            if (Items[i].SellIn < 0)
-            {
-                if (Items[i].Name != "Aged Brie")
-                {
-                    if (Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-                    {
-                        if (Items[i].Quality > 0)
-                        {
-                            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                            {
-                                Items[i].Quality = Items[i].Quality - 1;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Items[i].Quality = Items[i].Quality - Items[i].Quality;
-                    }
-                }
-                else
-                {
-                    if (Items[i].Quality < 50)
-                    {
-                        Items[i].Quality = Items[i].Quality + 1;
-                    }
-                }
-            }
+            t.SellIn -= 1;
         }
+    }
+
+    private static void AlterQuality(Item item, int value)
+    {
+        if (item.Quality + value > 50)
+        {
+            item.Quality = 50;
+            return;
+        }
+
+        if (item.Name == SpecialItems.BackstagePasses)
+        {
+            item.Quality += item.SellIn switch
+            {
+                > 10 => 1,
+                < 11 and > 5 => 2,
+                <= 5 => 3
+            };
+
+            if (item.SellIn < 0)
+                item.Quality = 0;
+
+            return;
+        }
+
+        if (item.SellIn < 1)
+            value *= 2;
+            
+        if (string.Equals(item.Name, SpecialItems.ConjuredManaCake, StringComparison.OrdinalIgnoreCase))
+            value *= 2;
+        
+        item.Quality += value;
+
+        if (item.Quality < 0)
+            item.Quality = 0;
     }
 }
